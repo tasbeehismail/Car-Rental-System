@@ -3,7 +3,7 @@ const router = Router();
 import * as rentalController from "./controller/rental.js";
 
 router.route('/')
-    .post(rentalController.addRental)
+    .post(rentalController.createRental)
     .get(rentalController.getRentals);
 
 router.route('/:rental_id')
