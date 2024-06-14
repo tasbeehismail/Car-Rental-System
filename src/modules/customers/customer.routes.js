@@ -1,14 +1,16 @@
 import { Router } from "express";
 const router = Router();
-import * as customerController from "./controller/customer.js";
+import * as userController from "./controller/customer.js";
 
 router.route('/')
-    .post(customerController.addCustomer)
-    .get(customerController.getCustomers);
+    .get(userController.getUsers); // done
 
-router.route('/:customer_id')
-    .get(customerController.getCustomer)
-    .put(customerController.updateCustomer)
-    .delete(customerController.deleteCustomer);
+router.route('/signup').post(userController.signup); // done
+router.route('/login').post(userController.login); // done
+
+router.route('/:user_id')
+    .get(userController.getUser) // done
+    .put(userController.updateUser) // for owners only
+    .delete(userController.deleteUser); // for owners only
  
 export default router;
