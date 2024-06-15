@@ -1,14 +1,11 @@
-import { MongoClient } from 'mongodb';
+import mongoose from "mongoose";
 
-
-const client = new MongoClient('mongodb://localhost:27017');
-
-client.connect().then(() => {
-    console.log('Connected successfully to server');
-}).catch((err) => {
-    console.log('Unable to connect to server database', err);
-})
-
-const db = client.db('car-rental-system');   
+const db = async () => {
+    mongoose.connect('mongodb://127.0.0.1:27017/car-rental-system').then(() => {
+        console.log('Connected successfully to database');
+    }).catch((err) => {
+        console.log('Unable to connect to database', err);
+    })
+}
 
 export default db
