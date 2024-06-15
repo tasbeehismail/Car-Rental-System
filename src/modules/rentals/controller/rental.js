@@ -1,57 +1,25 @@
-import db from '../../../../database/connection.js';
-import { ObjectId } from 'mongodb';
+import Rental from '../../../../database/models/rental.js';
+import Car from '../../../../database/models/car.js';
 
 export const getRentals = async (req, res) => {
     try { 
-        const result = await db.collection('rentals').aggregate([
-            {
-                $lookup: {
-                    from: "users",
-                    localField: "user_id",
-                    foreignField: "_id",
-                    as: "customer"
-                },
-            },
-            {
-                $lookup: {
-                    from: "cars",
-                    localField: "car_id",
-                    foreignField: "_id",
-                    as: "car"
-                }
-            }
-        ]).toArray();
-        
+        const rentals = await Rental.find()
+        .populate('customer')
+        .populate('car');
 
-        return res.status(200).json({ message: 'Rentals fetched successfully', data: result });
+        return res.status(200).json({ message: 'Rentals fetched successfully', data: rentals });
     } catch (error) {
-        return res.status(500).json({ message: 'Internal server error' });
+        return res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 };
 
 export const getRental = async (req, res) => {
     try {
-        const result = await db.collection('rentals').aggregate([
-            { $match: { _id: new ObjectId(req.params.rental_id) } },
-            {
-                $lookup: {
-                    from: "users",
-                    localField: "user_id",
-                    foreignField: "_id",
-                    as: "customer"
-                },
-            },
-            {
-                $lookup: {
-                    from: "cars",
-                    localField: "car_id",
-                    foreignField: "_id",
-                    as: "car"
-                }
-            }
-        ]).toArray();
+        const rental = await Rental.findById(req.params.rental_id)
+            .populate('customer')
+            .populate('car');
 
-        return res.status(200).json({ message: 'Rental fetched successfully', data: result });
+        return res.status(200).json({ message: 'Rental fetched successfully', data: rental });
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
     }
@@ -59,38 +27,44 @@ export const getRental = async (req, res) => {
 
 export const createRental = async (req, res) => {
     try {
-        const car = await db.collection('cars').findOne({ _id: new ObjectId(req.body.car_id) });
-        if (car.rental_status === 'rented' || new Date(car.returned_date) > new Date()) {
+        const car = await Car.findById(req.body.car);
+        if (car.rental_status === 'rented') {
             return res.status(400).json({ message: 'Car is already rented' });
         }
 
-        const result = await db.collection('rentals').insertOne(req.body);
-        
-        await db.collection('cars').updateOne(
-            { _id: new ObjectId(req.body.car_id) }, 
-            { $set: { 'rental-status': 'rented' } });
+        const result = await Rental.create(req.body);
+        await Car.findByIdAndUpdate(req.body.car, { rental_status: "rented" }, {new: true});
 
         return res.status(201).json({ message: 'Rental created successfully', data: result });
     } catch (error) {
-        return res.status(500).json({ message: 'Internal server error' });
+        return res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 };
 
 export const updateRental = async (req, res) => {
     try {
-        const result = await db.collection('rentals').updateOne({ _id: new ObjectId(req.params.rental_id) }, { $set: req.body });
+        const result = await Rental.findByIdAndUpdate(req.params.rental_id, req.body, { new: true });
+        // if change car_id, update the car status to available
+        if (req.body.car && req.body.car != result.car) {
+            const car = await Car.findById(req.body.car);
+            if (car.rental_status === 'rented') {
+                return res.status(400).json({ message: 'Car is already rented' });
+            }
+            await Car.findByIdAndUpdate(result.car, { rental_status: "available" });
+            await Car.findByIdAndUpdate(req.body.car, { rental_status: "rented" });
+        }
         return res.status(200).json({ message: 'Rental updated successfully', data: result });
     } catch (error) {
-        return res.status(500).json({ message: 'Internal server error' });
+        return res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 };
 
 export const deleteRental = async (req, res) => {
     try {
-        const result = await db.collection('rentals').deleteOne({ _id: new ObjectId(req.params.rental_id) });
-        await db.collection('cars').updateOne(
-            { _id: new ObjectId(req.body.car_id) }, 
-            { $set: { 'rental-status': 'available' } });
+        const result = await Rental.findByIdAndDelete(req.params.rental_id);
+        await Car.findByIdAndUpdate(
+            result.car, 
+            { rental_status: 'available' });
 
         return res.status(200).json({ message: 'Rental deleted successfully', data: result });
     } catch (error) {
