@@ -1,8 +1,5 @@
-import db from '../../../../database/connection.js';
-import { ObjectId } from 'mongodb';
 import User from '../../../../database/models/user.js'
 import bcrypt from 'bcrypt';
-import { mergeDefaults } from 'sequelize/lib/utils';
 
 // the owners or admins not have to sign up, we just need to login and the accounts are already created
 export const signup = async (req, res) => { 
@@ -56,7 +53,7 @@ export const getUsers = async (req, res) => {
 
 export const getUser = async (req, res) => {
     try {
-        const result = await User.findById({ _id: new ObjectId(req.params.user_id) });
+        const result = await User.findById(req.params.user_id);
         return res.status(200).json({ message: 'User fetched successfully', data: result });
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
@@ -93,7 +90,7 @@ export const deleteUser = async (req, res) => {
         if(!ownerCheck && user_id != customer_id) {
             return res.status(403).send({message: 'Permission denied'});
         }
-        const result = await User.findByIdAndDelete({ _id: new ObjectId(customer_id) });
+        const result = await User.findByIdAndDelete(customer_id);
         if (!result) {
             return res.status(404).json({ message: 'User not found' });
         }
