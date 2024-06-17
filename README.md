@@ -109,7 +109,7 @@ The Car Rental System is a web application built with Node.js and MongoDB, desig
 ### Special APIs
 
 1. **Get all cars whose model is ‘Honda’ and ‘Toyota’**
-   - `GET /cars?models=Honda,Toyota`
+   - `GET /cars/special?models=Honda,Toyota`
    - Retrieves a list of all cars with models 'Honda' or 'Toyota'.
 
 2. **Get Available Cars of a Specific Model**

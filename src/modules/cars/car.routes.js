@@ -1,8 +1,11 @@
 import { Router } from "express";
 const router = Router();
 import * as carController from "./controller/car.js";
-import db from "../../../database/connection.js";
+ 
 
+router.route('/special')
+    .get(carController.getCarsOfSpecificModels);
+    
 router.route('/')
     .post(carController.addCar)
     .get(carController.getCars);
@@ -12,6 +15,5 @@ router.route('/:car_id')
     .put(carController.updateCar)
     .delete(carController.deleteCar);
 
-router.route('/models')
-    .get(carController.getModels);
+ 
 export default router;
