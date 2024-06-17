@@ -79,19 +79,23 @@ const isOwner = async (user_id) => {
 };
 // Any user can update or delete their own account, but only the owner can change any user's account.
 export const updateUser = async (req, res) => {
-    const { user_id } = req.params;
-    const { customer_id } = req.body;
     try {
+        const { user_id } = req.params;
         const ownerCheck = await isOwner(user_id);
-        if(!ownerCheck && user_id != customer_id) {
+        if(!ownerCheck && user_id != req.body.customer_id) {
             return res.status(403).send({message: 'Permission denied'});
         }
-        let updatedUser = await db.collection('users').updateOne({ _id: new ObjectId(customer_id) }, { $set: req.body });
+
+        const { customer_id, ...updateFields } = req.body;
+        let updatedUser = await db.collection('users').updateOne(
+            { _id: new ObjectId(req.body.customer_id) }, 
+            { $set: updateFields });
         if (!updatedUser) {
             return res.status(404).json({ message: 'User not found' });
         }
-        return res.status(200).json({ message: 'User updated successfully', data: result });
+        return res.status(200).json({ message: 'User updated successfully', data: updatedUser });
     } catch (error) {
+        console.log(error);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };

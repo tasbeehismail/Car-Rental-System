@@ -7,7 +7,7 @@ export const getRentals = async (req, res) => {
             {
                 $lookup: {
                     from: "users",
-                    localField: "user",
+                    localField: "customer",
                     foreignField: "_id",
                     as: "customer"
                 },
@@ -98,7 +98,7 @@ export const createRental = async (req, res) => {
         const result = await db.collection('rentals').insertOne(rental);
 
         await db.collection('cars').updateOne(
-            { _id: new ObjectId(req.body.car_id) },
+            { _id: new ObjectId(req.body.car) },
             { $set: { 'rental_status': 'rented' } });
 
         return res.status(201).json({ message: 'Rental created successfully', data: result });
