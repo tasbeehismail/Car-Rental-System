@@ -11,7 +11,8 @@ export const addCar = async (req, res) => {
 
 export const getCars = async (req, res) => {
     try {
-        const result = await Car.find();   
+        const result = await Car.find()
+        .select('name model rental_status -_id');   
         return res.status(200).json({ message: 'Cars fetched successfully', data: result });
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
@@ -20,7 +21,8 @@ export const getCars = async (req, res) => {
 
 export const getCar = async (req, res) => {
     try {
-        const result = await Car.findById(req.params.car_id);
+        const result = await Car.findById(req.params.car_id)
+        .select('name model rental_status -_id');   ;
         return res.status(200).json({ message: 'Car fetched successfully', data: result });
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });

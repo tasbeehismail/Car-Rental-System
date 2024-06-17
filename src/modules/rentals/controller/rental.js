@@ -4,8 +4,9 @@ import Car from '../../../../database/models/car.js';
 export const getRentals = async (req, res) => {
     try { 
         const rentals = await Rental.find()
-        .populate('customer')
-        .populate('car');
+        .populate('customer', 'name email phone')
+        .populate('car', 'name model')
+        .select('-__v -createdAt -updatedAt -_id');
 
         return res.status(200).json({ message: 'Rentals fetched successfully', data: rentals });
     } catch (error) {
@@ -16,8 +17,9 @@ export const getRentals = async (req, res) => {
 export const getRental = async (req, res) => {
     try {
         const rental = await Rental.findById(req.params.rental_id)
-            .populate('customer')
-            .populate('car');
+        .populate('customer', 'name email phone')
+        .populate('car', 'name model')
+        .select('-__v -createdAt -updatedAt -_id');
 
         return res.status(200).json({ message: 'Rental fetched successfully', data: rental });
     } catch (error) {

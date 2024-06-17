@@ -9,7 +9,7 @@ const bootstrap = (app) => {
 
     app.use('/cars', carRouter);
     app.use('/rentals', rentalRouter);
-    app.use('/customers', customerRouter);
+    app.use('/users', customerRouter);
 
     app.use('*', (req, res) => {
         return res.json({ message: "not found routing" });

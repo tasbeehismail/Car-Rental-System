@@ -12,7 +12,7 @@ export const signup = async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const result = await User.create({ email, password: hashedPassword, phone, name, role: 'customer' });
+        const result = await User.create({ email, password: hashedPassword, phone, name});
 
         return res.status(201).json({ message: 'User created successfully', data: result });
 
@@ -44,7 +44,8 @@ export const login = async (req, res) => {
 
 export const getUsers = async (req, res) => {
     try {
-        const result = await User.find();   
+        const result = await User.find()
+        .select('name email phone role -_id');   
         return res.status(200).json({ message: 'Users fetched successfully', data: result });
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
@@ -53,7 +54,8 @@ export const getUsers = async (req, res) => {
 
 export const getUser = async (req, res) => {
     try {
-        const result = await User.findById(req.params.user_id);
+        const result = await User.findById(req.params.user_id)
+        .select('name email phone role -_id');   ;
         return res.status(200).json({ message: 'User fetched successfully', data: result });
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
