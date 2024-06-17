@@ -1,6 +1,7 @@
 import { Router } from "express";
 const router = Router();
 import * as carController from "./controller/car.js";
+import db from "../../../database/connection.js";
 
 router.route('/')
     .post(carController.addCar)
