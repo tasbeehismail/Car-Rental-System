@@ -1,8 +1,9 @@
-import Car from '../../../../database/models/car.js'
+import db from '../../../../database/connection.js';
+import { ObjectId } from 'mongodb';
 
 export const addCar = async (req, res) => {
     try {
-        const result = await Car.create(req.body);
+        const result = await db.collection('cars').insertOne(req.body);
         return res.status(201).json({ message: 'Car created successfully', data: result });
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
@@ -11,8 +12,13 @@ export const addCar = async (req, res) => {
 
 export const getCars = async (req, res) => {
     try {
-        const result = await Car.find()
-        .select('name model rental_status -_id');   
+        const result = await db.collection('cars').find({}, { 
+            projection: { 
+                _id: 0,
+                name: 1,
+                model: 1
+            } 
+        }).toArray();   
         return res.status(200).json({ message: 'Cars fetched successfully', data: result });
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
@@ -21,8 +27,13 @@ export const getCars = async (req, res) => {
 
 export const getCar = async (req, res) => {
     try {
-        const result = await Car.findById(req.params.car_id)
-        .select('name model rental_status -_id');   ;
+        const result = await db.collection('cars').findOne({ _id: new ObjectId(req.params.car_id) }, {
+            projection: {
+                _id: 0,
+                name: 1,
+                model: 1
+            }
+        });
         return res.status(200).json({ message: 'Car fetched successfully', data: result });
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
@@ -31,7 +42,7 @@ export const getCar = async (req, res) => {
 
 export const updateCar = async (req, res) => {
     try {
-        const result = await Car.findByIdAndUpdate(req.params.car_id, req.body, {new: true});
+        const result = await db.collection('cars').updateOne({ _id: new ObjectId(req.params.car_id) }, { $set: req.body });
         return res.status(200).json({ message: 'Car updated successfully', data: result });
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
@@ -40,7 +51,7 @@ export const updateCar = async (req, res) => {
 
 export const deleteCar = async (req, res) => {
     try {
-        const result = await Car.findByIdAndDelete(req.params.car_id);
+        const result = await db.collection('cars').deleteOne({ _id: new ObjectId(req.params.car_id) });
         return res.status(200).json({ message: 'Car deleted successfully', data: result });
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
