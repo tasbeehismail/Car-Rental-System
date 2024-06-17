@@ -10,5 +10,7 @@ router.route('/:car_id')
     .get(carController.getCar)
     .put(carController.updateCar)
     .delete(carController.deleteCar);
-    
+
+router.route('/models')
+    .get(carController.getModels);
 export default router;

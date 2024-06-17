@@ -57,3 +57,7 @@ export const deleteCar = async (req, res) => {
         return res.status(500).json({ message: 'Internal server error' });
     }
 };
+
+export const getModels = async (req, res) => {
+    console.log('I am inside getAvailableCars');
+};
