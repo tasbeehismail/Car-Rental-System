@@ -80,4 +80,25 @@ export const getCarsOfSpecificModels = async (req, res) => {
     }
 };
 
+export const getAvailableCarsWithSpecificModel = async (req, res) => {
+    try {
+        if (!req.query.model) {
+            return res.status(400).json({ message: 'Model is required' });
+        }
+        const model = req.query.model;
+        const result = await db.collection('cars').find({ 'model': model, 'rental_status': 'available' }, {
+            projection: {
+                _id: 0,
+                name: 1,
+                model: 1,
+                rental_status: 1
+            }
+        }).toArray();
+        return res.status(200).json({ message: 'Cars fetched successfully', data: result });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
 

@@ -3,8 +3,8 @@ const router = Router();
 import * as carController from "./controller/car.js";
  
 
-router.route('/special')
-    .get(carController.getCarsOfSpecificModels);
+router.get('/specific', carController.getCarsOfSpecificModels);
+router.get('/available', carController.getAvailableCarsWithSpecificModel);
     
 router.route('/')
     .post(carController.addCar)
