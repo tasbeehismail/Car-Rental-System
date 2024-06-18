@@ -131,4 +131,35 @@ export const getRentedOrSpecificModel = async (req, res) => {
     }
 }
 
+export const getRentedOrAvailableOfSpecificModels = async (req, res) => {
+    try {
+        const {rentedModel, availableModel} = req.query;
+        if (!rentedModel || !availableModel) {
+            return res.status(400).json({ message: 'Models are required' });
+        }   
+        const rentedArray = rentedModel.split(',');
+        const availableArray = availableModel.split(',');
+
+        const result = await db.collection('cars').find({ 
+            $or: [
+                { rental_status: 'rented', model: { $in: rentedArray } },
+                { rental_status: 'available', model: { $in: availableArray } }
+            ]
+        },
+             {
+                projection: {
+                    _id: 0,
+                    name: 1,
+                    model: 1,
+                    rental_status: 1
+                }
+             }).toArray();
+
+        return res.status(200).json({ message: 'Cars fetched successfully', data: result });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
 

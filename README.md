@@ -120,7 +120,7 @@ The Car Rental System is a web application built with Node.js and MongoDB, desig
    - `GET /cars/rentedOrSpecific?model=Honda`
    - Retrieves a list of cars that are either rented or of a specific model.
 
-4. **Get Available Cars of Specific Models or Rented Cars of a Specific Model**
-   - `GET /cars?models=:model1,:model2&status=available,rented`
-   - Retrieves a list of available cars of specific models or rented cars of a specific model.
+4. **Get Available Cars of Specific Models or Rented Cars of a Specific Models**
+   - `GET /cars/available-or-rented?availableModel=Toyota&rentedModel=Honda`
+   - Retrieves a list of available cars of specific models or rented cars of a specific models.
   
