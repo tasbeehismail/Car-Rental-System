@@ -4,7 +4,8 @@ import * as carController from "./controller/car.js";
  
 
 router.get('/specific', carController.getCarsOfSpecificModels);
-router.get('/available', carController.getAvailableCarsWithSpecificModel);
+router.get('/availableWithSpecific', carController.getAvailableCarsWithSpecificModel);
+router.get('/rentedOrSpecific', carController.getRentedOrSpecificModel);
     
 router.route('/')
     .post(carController.addCar)
